@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from model import load_and_preprocess_data, build_model, train_model, fetch_data
 import numpy as np
-
+import tensorflow as tf
 
 app = FastAPI()
 
