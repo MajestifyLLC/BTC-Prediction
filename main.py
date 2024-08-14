@@ -1,12 +1,27 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-from model import load_and_preprocess_data, preprocess_data, build_model, train_model, predict
+from model import load_and_preprocess_data, preprocess_data, build_model, train_model, fetch_data
 import numpy as np
+import tensorflow as tf
 
 app = FastAPI()
 
 # Load and preprocess data
 features, target = load_and_preprocess_data()
+# Split and normalize the data
+def preprocess_data(features, target):
+    X = tf.convert_to_tensor(features, dtype=tf.float32)
+    y = tf.convert_to_tensor(target, dtype=tf.float32)
+
+    train_size = int(len(X) * 0.8)
+    X_train, X_test = X[:train_size], X[train_size:]
+    y_train, y_test = y[:train_size], y[train_size:]
+
+    normalizer = tf.keras.layers.Normalization(axis=-1)
+    normalizer.adapt(tf.data.Dataset.from_tensor_slices(X_train).batch(256))
+
+    return X_train, X_test, y_train, y_test, normalizer
+
 X_train, X_test, y_train, y_test, normalizer = preprocess_data(features, target)
 
 # Build and train the model
