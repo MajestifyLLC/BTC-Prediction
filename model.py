@@ -33,9 +33,6 @@ def load_and_preprocess_data():
     target = df['price']
     return features, target
 
-# Keep other functions the same, like preprocess_data, build_model, train_model, evaluate_model, and predict
-
-# Modify the build_model function to add a confidence level
 def build_model(normalizer):
     model = tf.keras.Sequential([
         normalizer,
@@ -44,3 +41,10 @@ def build_model(normalizer):
     ])
     model.compile(optimizer='adam', loss='mean_squared_error', metrics=['mae', 'mse'])
     return model
+
+def train_model(model, X_train, y_train):
+    history = model.fit(X_train, y_train, epochs=100, validation_split=0.2, verbose=1)
+    return model, history
+
+def predict(model, X):
+    return model.predict(X)
